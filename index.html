@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PiPlay Galaxy – Test Payment</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Pi SDK -->
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: #020617;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      background: #020617;
+      border: 1px solid #1e293b;
+      padding: 30px;
+      border-radius: 14px;
+      text-align: center;
+      width: 90%;
+      max-width: 360px;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: bold;
+      background: #22c55e;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>🚀 PiPlay Galaxy</h1>
+    <p>Test Transaction on Pi Testnet</p>
+    <button onclick="pay()">Pay 0.01 π</button>
+  </div>
+
+<script>
+  Pi.init({
+    version: "2.0",
+    sandbox: true
+  });
+
+  function pay() {
+    Pi.authenticate(
+      ["payments"],
+      function onIncompletePaymentFound(payment) {
+        console.log("Incomplete payment found", payment);
+      }
+    ).then(() => {
+      Pi.createPayment(
+        {
+          amount: 0.01,
+          memo: "Test payment PiPlay Galaxy",
+          metadata: { app: "PiPlay Galaxy" }
+        },
+        {
+          onReadyForServerApproval: function (paymentId) {
+            console.log("Approved automatically:", paymentId);
+            Pi.approvePayment(paymentId); // 🔥 هذا هو السر
+          },
+          onReadyForServerCompletion: function (paymentId, txid) {
+            alert("✅ Payment successful!");
+            console.log(paymentId, txid);
+          },
+          onCancel: function () {
+            alert("❌ Payment cancelled");
+          },
+          onError: function (err) {
+            console.error(err);
+            alert("❌ Error occurred");
+          }
+        }
+      );
+    });
+  }
+</script>
+</body>
+</html>
