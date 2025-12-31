@@ -1,8 +1,9 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
   <meta charset="UTF-8" />
-  <title>PiPlay Galaxy – Test Payment</title>
+  <title>PiPlay Galaxy – Mystery Box</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Pi SDK -->
@@ -34,7 +35,8 @@
       padding: 14px;
       font-size: 16px;
       font-weight: bold;
-      background: #22c55e;
+      background: #facc15;
+      color: #000;
       border: none;
       border-radius: 10px;
       cursor: pointer;
@@ -44,49 +46,38 @@
 
 <body>
   <div class="card">
-    <h1>🚀 PiPlay Galaxy</h1>
-    <p>Test Transaction on Pi Testnet</p>
-    <button onclick="pay()">Pay 0.01 π</button>
+    <h1>🎁 PiPlay Galaxy</h1>
+    <p>افتح الصندوق الغامض</p>
+    <button onclick="openMysteryBox()">افتح الصندوق (0.01π)</button>
   </div>
 
 <script>
+  // 🔥 IMPORTANT: Production mode
   Pi.init({
     version: "2.0",
-    sandbox: true
+    sandbox: false
   });
 
-  function pay() {
-    Pi.authenticate(
-      ["payments"],
-      function onIncompletePaymentFound(payment) {
-        console.log("Incomplete payment found", payment);
-      }
-    ).then(() => {
-      Pi.createPayment(
-        {
-          amount: 0.01,
-          memo: "Test payment PiPlay Galaxy",
-          metadata: { app: "PiPlay Galaxy" }
-        },
-        {
-          onReadyForServerApproval: function (paymentId) {
-            console.log("Approved automatically:", paymentId);
-            Pi.approvePayment(paymentId); // 🔥 هذا هو السر
-          },
-          onReadyForServerCompletion: function (paymentId, txid) {
-            alert("✅ Payment successful!");
-            console.log(paymentId, txid);
-          },
-          onCancel: function () {
-            alert("❌ Payment cancelled");
-          },
-          onError: function (err) {
-            console.error(err);
-            alert("❌ Error occurred");
-          }
+  async function openMysteryBox() {
+    try {
+      await Pi.authenticate(["payments"], () => {});
+
+      const payment = await Pi.createPayment({
+        amount: 0.01,
+        memo: "Mystery Box - PiPlay Galaxy",
+        metadata: {
+          feature: "mystery_box",
+          app: "PiPlay Galaxy"
         }
-      );
-    });
+      });
+
+      alert("✅ تم الدفع بنجاح! الصندوق تحل 🎉");
+      console.log("Payment success:", payment);
+
+    } catch (err) {
+      console.error(err);
+      alert("❌ العملية فشلت أو تلغات");
+    }
   }
 </script>
 </body>
